@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+env -i SSH_AUTH_SOCK=$SSH_AUTH_SOCK TERM=$TERM HOME=$HOME SHELL=/bin/bash bash -il

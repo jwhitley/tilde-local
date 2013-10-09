@@ -1,0 +1,90 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require 'optparse'
+
+class String
+  def unindent
+    gsub /^#{self[/\A\s*/]}/, ''
+  end
+end
+
+class PowApp
+  include FileUtils
+  
+  USAGE = <<-EOM.unindent
+  Usage: #{self.name[0...-3].downcase} [options] directory [sitename]
+    Enable the specified directory for use with a local pow.cx install
+    A symlink to this script named 'unpow' acts like the --disable option.
+  EOM
+
+  def initialize(args)
+    @mode = :enable
+    # Symlinking to the script via 'unpow' is a shortcut to the -d option
+    @disabled = File.basename($0) == 'unpow'
+
+    @opts = OptionParser.new do |opts|
+      opts.banner = USAGE
+      
+      opts.on("-d","--disable", "Disable pow for the named directory") do |prefix|
+        @mode = :disable
+      end
+      opts.on("-b","--broken", "Show dangling pow symlinks") do |b|
+        @mode = :broken
+      end
+      opts.on("-h","--help", "Show this help") do
+        puts @opts
+        exit
+      end
+    end
+    
+    @opts.parse!(args)
+    if @mode != :broken
+      usage "Missing required directory name" if args.length < 1
+      usage "Too many arguments" if args.length > 2
+      @directory = File.expand_path(args[0])
+      @sitename = args[1] || File.basename(@directory)
+    end
+  end
+
+  def usage(msg)
+    puts "#{msg}\n\n" if msg
+    puts @opts
+    exit
+  end
+
+  # mode methods
+  def broken
+    links = `find -L ~/.pow -maxdepth 1 -type l`
+    if links.empty?
+      puts "No broken links found."
+    else
+      puts "Broken pow links:"
+      links.split("\n").each do |l|
+        puts "#{l} -/-> #{File.readlink(l)}"
+      end
+    end
+  end
+
+  def disable
+    puts "#{@directory} now disabled as #{@sitename}.dev"
+    cd File.expand_path('~/.pow') do
+      target_link = Dir['./*'].find { |f| File.readlink(f) == @directory }
+      rm target_link
+    end
+  end
+
+  def enable
+    puts "#{@directory} now enabled as #{@sitename}.dev"
+    cd File.expand_path('~/.pow') do
+      ln_sf @directory, @sitename
+    end    
+  end
+
+  # Run the app
+  def run
+    self.send(@mode)
+  end
+end
+
+PowApp.new(ARGV).run

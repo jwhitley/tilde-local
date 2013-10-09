@@ -1,0 +1,80 @@
+#!/bin/zsh
+
+# switch -- Establish or remove symlinks in ~/local/bin to various tools
+
+usage () {
+    local help="\
+switch: Maintains symlinks to tools under ~/local/bin\n\
+    Create/update a symlink <tool> to the executable at <path>\n\
+      switch <tool> <executable>\n\
+    Remove a symlink to <tool>\n\
+      switch -d <tool>\
+"
+    echo $help
+    exit 0
+}
+
+restore_default () {
+  local target=~/local/bin/$1
+  if [[ -h $target ]]; then
+    rm $target
+  else
+    echo "No symlink found at $target"
+  fi
+}
+
+list_links () {
+  (cd ~/local/bin; find . -type l | xargs ls -l)
+}
+
+# Main script functionality
+local opt
+while getopts "hld:" opt; do
+  case $opt in
+    h)
+      usage
+      ;;
+    d) # revert to the default tool
+      restore_default "$OPTARG"
+      exit 0
+      ;;
+    l) # list links in $target
+      list_links
+      exit 0
+      ;;
+  esac
+done
+  
+tool="$1"
+exe="$2"
+target=~/local/bin/$1
+
+if [[ -z $tool ]]; then
+  usage
+fi
+
+if [[ "${tool:h}" != '.' ]]; then
+  echo "The tool name '$tool' must not contain slashes '/'."
+  exit 1
+fi
+
+if [[ -z $exe ]]; then
+  echo "Please provide a path name.\n"
+  usage
+elif [[ ! -e $exe ]]; then
+  echo "$exe doesn't exist; not creating link."
+  exit 1
+fi
+
+if [[ -e target ]] && [[ ! -h $target ]]; then
+  echo "Error: $target is not a symlink; can't create link."
+  exit 1
+fi
+
+echo "~/local/bin/$tool -> $exe"
+cd ~/local/bin
+ln -sf $exe $tool
+
+# Local Variables:
+# mode: shell-script
+# End:

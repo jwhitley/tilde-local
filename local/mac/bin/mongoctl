@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+launchctl $1 homebrew.mxcl.mongodb

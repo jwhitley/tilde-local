@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+# This is a little app that calls the Macports 'port' command
+# and outputs the minimal set of ports that will recreate an
+# existing installation.  I.e. Only ports with no dependents
+# are emitted.
+
+class Macports
+  attr_reader :installed
+  
+  def initialize
+    @installed = installed_ports
+  end
+  
+  def installed_ports
+    # First line has no useful data
+    output = run_port(:installed, :drop_lines => 1)
+    output.map do |line|
+      /([^ ]+)/.match(line)[0]
+    end.uniq
+  end
+  
+  def minimal_set
+    installed.find_all do |port|
+      run_port(:dependents, port) =~ /has no dependents/
+    end
+  end
+
+  private
+  def run_port(*args)
+    opts = (args.pop if args.last.is_a? Hash) || {}
+    output = `/opt/local/bin/port #{args.join(' ')}`
+    if opts[:drop_lines]
+      output.sub!(/(.*?\n){#{opts[:drop_lines]}}/,'')
+    end
+    output
+  end
+end
+
+if __FILE__ == $0
+  #require 'ruby-debug'; Debugger.start; debugger
+  puts Macports.new.minimal_set.join("\n")
+end

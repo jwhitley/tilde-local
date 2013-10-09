@@ -1,0 +1,47 @@
+#!/usr/bin/env zsh
+
+# mux -- A tmux helper
+
+# is tmux server running?
+#   -- we can't call tmux commands unless the server is already running.
+if [[ -n "`ps -u $USER -o comm | tail -n +2 | grep tmux`" ]]; then
+  have_tmux_server=true
+
+  tmux_commands=( ` sed -Ene 's/^([a-z-]+-[a-z]+)( \(([a-z]+)\)).*/\1 \3/p' =(tmux lscm)` )
+fi
+
+show_tmux_sessions () {
+  if [[ "$have_tmux_server" == true ]]; then
+    tmux ls
+  else
+    echo "No tmux server"
+  fi
+  echo ""
+}
+
+if [[ "$1" == "--prompt" ]]; then
+  show_tmux_sessions
+
+  autoload -U compinit
+  compinit
+
+  if [[ -n "$have_tmux_server" ]]; then
+    compcontext=( `tmux ls -F '#{session_name}'` )
+  fi
+  vared -cp "tmux session?: " session
+  exec tmux new -As "${session}"
+fi
+
+# Passthru case: if $1 matches a valid tmux command then call it
+if [[ -n "$have_tmux_server" && -n "${1:*tmux_commands}" ]]; then
+  exec tmux \$@
+fi
+
+if (( $# == 0 )); then
+  show_tmux_sessions
+else 
+  # Fallthrough: no tmux command recognized, so create a session with the
+  # provided name
+
+  tmux new -As $1
+fi

@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+assert_ok() {
+    if [[ $? -ne 0 ]]; then
+        echo "command $* failed, code $?"
+        exit 1
+    fi
+}
+
+### dump local installations
+# homebrew
+/opt/hb/bin/brew list > /Users/whitley/Archive/backup/homebrew-installed
+assert_ok brew list
+# macports
+#/opt/local/bin/port installed > /Users/whitley/Archive/backup/ports-installed
+#assert_ok port installed
+#/opt/univ/bin/port installed > /Users/whitley/Archive/backup/portsuniv-installed
+#assert_ok portuniv installed
+
+# dump postgres
+#/opt/local/lib/postgresql82/bin/pg_dumpall -h localhost -U postgres > /Users/whitley/Archive/backup/pgsql-backup.sql
+#assert_ok pg_dumpall
+
+# del.icio.us backup
+# /Users/whitley/local/bin/delicious-backup >>& /Users/whitley/Archive/backup/del.icio.us/log.txt
+assert_ok delicious-backup

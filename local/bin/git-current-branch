@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Idiomatic way to print the current Git branch.
+
+git rev-parse --abbrev-ref HEAD

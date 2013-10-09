@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+import os
+import optparse
+import re
+import sys
+
+backup_suffix='.bak'
+
+def process_file(name, file_re, line_re, subst_str):
+    # see if this file needs to be converted
+    hit = False
+    if file_re.search(os.path.basename(name)):
+        input = open(name,'rb')
+        for line in input:
+            line_match = line_re.search(line)
+            if line_match:
+                hit = True
+                print 'hit: ' + name
+                #print '   line: %s' % line
+                break
+        input.close()
+    # return if we don't need to process this file
+    if not hit:
+        return
+    
+    backup = name+backup_suffix
+    os.rename(name,backup)
+
+    input = open(backup,'rb')
+    output = open(name,'w')
+    # process the file
+    for line in input:
+        output.write(line_re.sub(subst_str,line))
+    input.close()
+    output.close()
+    #os.remove(backup)
+
+def _searchAndReplace(options):
+    file_re = re.compile(options.file_regex)
+    line_re = re.compile(options.search_regex)
+    # walk through the specified directory processing all files
+    for path in options.start_paths:
+        for root, dirs, files in os.walk(path):
+            for name in files:
+                # ignore backup files
+                if name[-len(backup_suffix):] != backup_suffix:
+                    process_file(os.path.join(root,name), file_re, line_re, options.replace_string)
+            if 'CVS' in dirs:
+                dirs.remove('CVS')
+
+if __name__ == "__main__":
+    usage = """usage: %prog -p PATH -s REGEXP -r STR [-f REGEXP] [--pdb]
+
+%prog recursively descends a directory tree, performing a regular 
+expression search and replace on all files in that tree.  Optionally, the 
+search and replace may be limited to file names matching a regex."""
+
+    parser = optparse.OptionParser(usage=usage)
+    parser.add_option("--path","-p",dest="start_paths",action="append",type="string",
+                      help="Search and replace files in PATH.  May be specified multiple times to cover additional directories.", 
+                      metavar="PATH")
+    parser.add_option("--search","-s",dest="search_regex",help="Search for regular expression REGEXP.", metavar="REGEXP")
+    parser.add_option("--replace","-r",dest="replace_string",help="Replacement string; may include regexp group references.", metavar="STR"),
+    parser.add_option("--files","-f",dest="file_regex",help="Restrict to file names matched by a regular expression.", default=".*", metavar="REGEX")
+    parser.add_option("--pdb",action="store_true",dest="debug",help="Run under the PDB debugger.",default=False)
+    (options,args) = parser.parse_args()
+
+    if not options.search_regex:
+        parser.error("Missing search regexp option (--search, -s).")
+    if not options.replace_string:
+        parser.error("Missing replacement string options (--replace, -r)")
+    
+    if options.debug:
+        import pdb
+        pdb.run("_searchAndReplace(options)")
+    else:
+        _searchAndReplace(options)

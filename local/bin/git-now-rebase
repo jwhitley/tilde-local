@@ -1,0 +1,59 @@
+usage() {
+  echo "usage: git now rebase [--mine|-m] [<base-branch>]"
+}
+
+
+cmd_default() {
+  parse_args "$@"
+
+  WORKING_BRANCH=$(git_current_branch)
+  INITIAL_COMMIT=$(git_now_initial_commit)
+
+  if [ -n "$BASE_BRANCH" ]; then
+    COMMON_ANCESTOR_COMMIT=`git merge-base ${BASE_BRANCH} ${WORKING_BRANCH}`
+    if flag mine; then
+      FIRST_NOW_COMMIT=$(git_now_my_first_commit $COMMON_ANCESTOR_COMMIT)
+    else
+      FIRST_NOW_COMMIT=$(git_now_first_commit $COMMON_ANCESTOR_COMMIT)
+    fi
+
+    if [ "$FIRST_NOW_COMMIT" != "$INITIAL_COMMIT" ]; then
+      git rebase -i ${FIRST_NOW_COMMIT}^
+    else
+      git checkout ${FIRST_NOW_COMMIT}
+      git commit --amend
+      git rebase --onto HEAD ${FIRST_NOW_COMMIT} ${WORKING_BRANCH}
+    fi
+  else
+    if flag mine; then
+      FIRST_NOW_COMMIT=$(git_now_my_first_commit)
+    else
+      FIRST_NOW_COMMIT=$(git_now_first_commit)
+    fi
+
+    if [ "$FIRST_NOW_COMMIT" != "$INITIAL_COMMIT" ]; then
+      git rebase -i ${FIRST_NOW_COMMIT}^
+    else
+      git checkout ${FIRST_NOW_COMMIT}
+      git commit --amend
+      git rebase --onto HEAD ${FIRST_NOW_COMMIT} ${WORKING_BRANCH}
+    fi
+  fi
+}
+
+cmd_help() {
+  usage
+  exit 0
+}
+
+parse_args() {
+  # parse options
+  DEFINE_boolean 'mine' false 'limit git-now commits by my name' 'm'
+  FLAGS "$@" || exit $?
+  eval set -- "${FLAGS_ARGV}"
+
+  # read arguments into global variables
+  BASE_BRANCH=$1
+}
+
+# vim: set ff=unix ft=sh :

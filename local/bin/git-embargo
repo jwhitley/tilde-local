@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+# This is a utility wrapper around git update-index used to mark, unmark, and
+# list files that are marked with the assume-unchanged bit.  See `git help
+# update-index` for details.
+#
+# Usage:
+#   git embargo <FILE>    # Mark a file as embargoed -- changes won't appear in status
+#   git embargo -r <FILE> # Remove the embargo
+#   git embargo -l|--list # List all embargoed files
+case $1 in
+  -l|--list)
+    git ls-files -v | grep '^[a-z]'
+    ;;
+  -r|--remove)
+    shift
+    git update-index --no-assume-unchanged -- $*
+    ;;
+  *)
+    git update-index --assume-unchanged -- $*
+    ;;
+esac

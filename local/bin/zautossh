@@ -1,0 +1,3 @@
+#!/bin/zsh
+host=`zenity "--title=Konsole: ssh" "--text=ssh to host:" --entry`
+autossh -t "$host" "zsh -ilc exec\ screen\ -D\ -R"

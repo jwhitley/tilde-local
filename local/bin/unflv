@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+input=$1
+base=${1%.flv}
+
+if [[ "$input" == "$base" ]]; then
+  echo "Aborting: $1 is not an FLV file"
+fi
+
+output=${base}.mp4
+
+
+codecs=`ffprobe -show_streams $1 |& grep codec_name | cut -d= -f2`
+passthru="h264
+aac"
+
+if [[ "$codecs" == "$passthru" ]]; then
+  echo "Using copy codec"
+  codec_opts="-codec copy"
+else
+  echo "Converting to mp4"
+fi
+
+ffmpeg -i $input ${=codec_opts} $output

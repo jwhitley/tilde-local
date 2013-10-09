@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+
+import os
+import optparse
+import re
+import sys
+
+def grep(file,regexp,groups=None,single=False,outfile=sys.stdout):
+    """Prints lines matching regexp in the file-like object file to outfile, 
+which is sys.stdout by default.
+"""
+    search_re = re.compile(regexp)
+    if not single:
+        for line in file:
+            match = search_re.search(line)
+            if match:
+                if not groups:
+                    print line
+                else:
+                    for group in groups:
+                        outfile.write(match.group(group))
+                    print >>outfile
+    else:
+        content=file.read()
+        match = search_re.search(content)
+        if match:
+            if not groups:
+                print match.group(0)
+            else:
+                for group in groups:
+                    outfile.write(match.group(group))
+                print >>outfile
+
+def grepfiles(filenames,regexp,groups,single):
+    """Invokes pygrep.grep() with the specified parameters on each file
+in filenames.
+"""
+    for filename in filenames:
+        grep(file=open(filename,"r"),regexp=regexp,groups=groups,single=single)
+
+#===============================================================================
+# SCRIPT MAIN
+#===============================================================================
+if __name__ == "__main__":
+    usage = """usage: %prog [options] [-e|--regexp] regex [file1 file2 ... fileN]
+
+%prog is a regular expression search tool.  Its unique 
+features over GNU grep are support for Python regexp 
+syntax and an option to print only the specified match 
+groups from the regexp.  If no files are specified on the
+command line, pygrep reads from the standard input.
+"""
+
+    import copy
+    import utils
+
+    def convertGroupValue(value):
+        """Try to convert a value to an int and return it.  If that fails,
+return the original value."""
+        try:
+            return int(value)
+        except ValueError:
+            return value
+
+    def checkGrouplist(option, opt, value):
+        """Accepts a comma-separated list, value, and returns a list
+of regexp group values.  Integers in the list are converted to Python ints,
+strings are assumed to be string match group names and left as is."""
+        return [convertGroupValue(item) for item in utils.csvToList(value)]
+
+    class GroupsOption(optparse.Option):
+        TYPES = optparse.Option.TYPES + ("grouplist",)
+        TYPE_CHECKER = copy.copy(optparse.Option.TYPE_CHECKER)
+        TYPE_CHECKER["grouplist"] = checkGrouplist
+
+    parser = optparse.OptionParser(option_class=GroupsOption,usage=usage)
+    parser.add_option("--regexp","-e",dest="regexp",help="Search for regular expression REGEXP.", metavar="REGEXP",default=None)
+    parser.add_option("--groups","-g",dest="groups",type="grouplist",help="Comma-separated list of match groups to print",default=None)
+    parser.add_option("--single","-1",action="store_true",dest="single",help="Match each file as a single string instead of line-by-line.", default=False)
+    parser.add_option("--pdb",action="store_true",dest="debug",help="Run under the PDB debugger.",default=False)
+    (options,args) = parser.parse_args()
+
+    insufficientArgsMsg = "Insufficient arguments.  Please specify a regular expression."
+    if not options.regexp:
+        if len(args) >= 1:
+            options.regexp = args.pop(0)
+        else:
+            parser.error(insufficientArgsMsg)
+
+    def evalOrDebug(debug, command):
+        if debug:
+            import pdb
+            pdb.run(command)
+        else:
+            eval(command)
+
+    if len(args) == 0:
+        # use standard input
+        command="grep(file=sys.stdin,regexp=options.regexp,groups=options.groups,single=options.single)"
+    else:
+        # use files specified on command line
+        command="grepfiles(filenames=args,regexp=options.regexp,groups=options.groups,single=options.single)"
+
+    evalOrDebug(options.debug,command)

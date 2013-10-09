@@ -1,0 +1,7 @@
+# For a description of the file format, see the Users Guide
+# http://cygwin.com/1.7/cygwin-ug-net/using.html#mount-table
+
+# This is default anyway:
+none / cygdrive binary,posix=0,user 0 0
+c:/home /home ntfs binary 0 0
+c:/program\040files /programs ntfs binary 0 0
