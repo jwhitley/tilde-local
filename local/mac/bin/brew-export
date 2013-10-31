@@ -1,0 +1,22 @@
+#!/bin/zsh
+
+set -e
+
+tmpdir=`mktemp -d "$HOME/tmp/${0:t}.XXXXXXXXXXX"`
+deps=$tmpdir/brew.deps
+formulas=$tmpdir/brew.formulas
+dependents=$tmpdir/brew.dependents
+install_set=$tmpdir/brew.install_set
+
+brew deps -n --installed > $deps
+
+# Extract the list of formulas
+brew list > $formulas
+
+# Extract the dependents
+cut -d: -f 2 $deps | sed -e 's/^ //' -e '/^$/d' -e 's/ /\
+/g' | sort -u > $dependents
+
+cat $formulas $dependents | sort | uniq -u
+
+rm -rf $tmpdir
