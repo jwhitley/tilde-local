@@ -9,7 +9,7 @@ assert_ok() {
 
 ### dump local installations
 # homebrew
-/usr/local/bin/brew export > /Users/whitley/Archive/backup/homebrew-installed
+/Users/whitley/local/mac/bin/brew-export > /Users/whitley/Archive/backup/homebrew-installed
 assert_ok brew export
 
 # dump postgres
