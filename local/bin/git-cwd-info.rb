@@ -87,6 +87,10 @@ module Prompt
       " #{q fg_hi(Black)}✗#{q reset}" unless clean?
     end
 
+    def vcsh_repo
+      @vcsh_repo ||= ENV['VCSH_REPO_NAME']
+    end
+
     def rebasing_etc
       if File.exists?(File.join(repo_path, 'BISECT_LOG'))
         "+bisect"
@@ -106,7 +110,7 @@ module Prompt
     end
 
     def prompt
-      print "#{q branch_color}#{parse_branch} #{q fg_lo(White)}#{head_commit_id}#{q reset}#{rebasing_etc}"
+      print "#{q fg_hi(Yellow) if vcsh_repo}#{vcsh_repo} #{q branch_color}#{parse_branch} #{q fg_lo(White)}#{head_commit_id}#{q reset}#{rebasing_etc}"
     end
   end
 end
