@@ -3,7 +3,7 @@
 typeset -A opts
 opts=( C-h -L C-j -D C-k -U C-l -L 'C-\' -l )
 
-tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$'
+tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)n?vim$'
 is_vim_pane=$?
 window_panes=`tmux display-message -p '#{window_panes}'`
 
