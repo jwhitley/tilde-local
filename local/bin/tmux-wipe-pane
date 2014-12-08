@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)(zsh|bash)$'
+is_shell_pane=$?
+
+if (( is_shell_pane == 0 )); then
+  # Clear the shell screen and the pane's tmux history
+  tmux send-keys C-l && tmux clear-history
+else
+  # Pass the key through -- assumes this script is bound to C-k
+  tmux send-keys C-k
+fi
