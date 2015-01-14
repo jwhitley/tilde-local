@@ -43,5 +43,5 @@ else
   # Fallthrough: no tmux command recognized, so create a session with the
   # provided name
 
-  tmux new -As $1
+  tmux ${TMUX_OPTS} new -As $1
 fi
