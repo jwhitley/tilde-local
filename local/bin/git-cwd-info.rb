@@ -103,7 +103,7 @@ module Prompt
 
     def branch_color
       if clean?
-        fg_hi(Black)
+        fg_hi(Blue)
       else
         fg_hi(Red)
       end
