@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)(zsh|bash)$'
+tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)(zsh|bash|ssh)$'
 is_shell_pane=$?
 
 if (( is_shell_pane == 0 )); then

@@ -10,5 +10,14 @@ window_panes=`tmux display-message -p '#{window_panes}'`
 if (( is_vim_pane == 0 || window_panes == 1 )); then
   tmux send-keys $1
 else
+  pane_id=`tmux display-message -p '#{pane_id}'`
   tmux select-pane $opts[$1]
+  # If the movement action is a noop (moved to the original pane) and the
+  # action is overloaded as a terminal clear action (C-k or C-l), then pass it
+  # through.
+  if [[ "$pane_id" = "`tmux-display-message -p '#{pane_id}'`" ]]; then
+    if [[ "$1" = "C-k" ]]; then
+      tmux-wipe-pane
+    fi
+  fi
 fi
