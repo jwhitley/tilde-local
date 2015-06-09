@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+
+# tmux-insert-window <destination position>
+#
+# This inserts the current window at the specified position
+
+window_id=`tmux display-message -p '#{window_id}'`
+
+tmux new-window -a -t:$1
+
+tmux swap-window -t:-1
+
+tmux move-window -k -s ${window_id} -t:$1
