@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+for repo in $(vcsh list); do
+  vcsh upgrade $repo
+done
