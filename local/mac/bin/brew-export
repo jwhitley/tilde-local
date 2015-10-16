@@ -8,10 +8,10 @@ formulas=$tmpdir/brew.formulas
 dependents=$tmpdir/brew.dependents
 install_set=$tmpdir/brew.install_set
 
-brew deps -n --installed > $deps
+/usr/local/bin/brew deps -n --installed > $deps
 
 # Extract the list of formulas
-brew list > $formulas
+/usr/local/bin/brew list > $formulas
 
 # Extract the dependents
 cut -d: -f 2 $deps | sed -e 's/^ //' -e '/^$/d' -e 's/ /\
