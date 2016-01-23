@@ -5,6 +5,7 @@
 !/local/bin
 !/local/bin/ack
 !/local/bin/autossh
+!/local/bin/bucket_report.awk
 !/local/bin/flv2mp4
 !/local/bin/gcal
 !/local/bin/git-branch-has-remote
@@ -21,7 +22,6 @@
 !/local/bin/git-now-rebase
 !/local/bin/git-pretty-head
 !/local/bin/git-pretty-log
-!/local/bin/git-remote-hg
 !/local/bin/git-showtool
 !/local/bin/git-unmerged
 !/local/bin/gitnow-common
@@ -49,6 +49,8 @@
 !/local/bin/v
 !/local/bin/vcproj-extract.pl
 !/local/bin/vcsh-ls-files
+!/local/bin/vcsh-update-ignores
+!/local/bin/vcsh-upgrade-all
 !/local/bin/vf
 !/local/bin/vi
 !/local/bin/vim
@@ -63,7 +65,11 @@
 !/local/cygwin/templates/etc/fstab
 !/local/doc
 !/local/doc/99-trackman.conf
+!/local/doc/screen-256color.ti
+!/local/doc/terminal-setup.md
+!/local/doc/tmux-256color.ti
 !/local/doc/ubuntu-modifications.md
+!/local/doc/xterm-256color.ti
 !/local/mac
 !/local/mac/bin
 !/local/mac/bin/airport
