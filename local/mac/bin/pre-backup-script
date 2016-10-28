@@ -9,9 +9,4 @@ assert_ok() {
 
 ### dump local installations
 # homebrew
-/Users/whitley/local/mac/bin/brew-export > /Users/whitley/Archive/backup/homebrew-installed
-assert_ok brew export
-
-# dump postgres
-#/opt/local/lib/postgresql82/bin/pg_dumpall -h localhost -U postgres > /Users/whitley/Archive/backup/pgsql-backup.sql
-#assert_ok pg_dumpall
+assert_ok sudo -u whitley brew export > /Users/whitley/Archive/backup/homebrew-installed
