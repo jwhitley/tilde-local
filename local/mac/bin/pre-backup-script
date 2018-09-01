@@ -9,4 +9,5 @@ assert_ok() {
 
 ### dump local installations
 # homebrew
-assert_ok sudo -u whitley brew export > /Users/whitley/Archive/backup/homebrew-installed
+(cd /Users/whitley/Archive/backup; sudo -u whitley brew bundle dump)
+assert_ok brew bundle dump
