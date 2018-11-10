@@ -9,5 +9,7 @@ assert_ok() {
 
 ### dump local installations
 # homebrew
-(cd /Users/whitley/Archive/backup; sudo -u whitley brew bundle dump)
+(cd /Users/whitley/Archive/backup
+ mv Brewfile Brewfile.last
+ sudo -u whitley /usr/local/bin/brew bundle dump)
 assert_ok brew bundle dump
