@@ -29,7 +29,7 @@ if [[ "$1" == "--prompt" ]]; then
     compcontext=( `tmux ls -F '#{session_name}'` )
   fi
   vared -cp "tmux session?: " session
-  exec tmux new -As "${session}"
+  exec tmux new -t "${session}"
 fi
 
 # Passthru case: if $1 matches a valid tmux command then call it
