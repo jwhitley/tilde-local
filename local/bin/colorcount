@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+identify -format '%f: %k\n' $*
