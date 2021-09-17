@@ -80,7 +80,7 @@ module Prompt
     end
 
     def clean?
-      @got_clean ||= (repo_path == '.' || `git status --porcelain`.strip.empty?)
+      @git_clean ||= (repo_path == '.' || `git status --porcelain`.strip.empty?)
     end
 
     def cwd_dirty
