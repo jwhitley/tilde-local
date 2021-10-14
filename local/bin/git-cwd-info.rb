@@ -80,7 +80,10 @@ module Prompt
     end
 
     def clean?
-      @git_clean ||= (repo_path == '.' || `git status --porcelain`.strip.empty?)
+      # MARK: I added the `-uno` flag to speed up the prompt on large working directories,
+      # where `git status` is slow enough that it returns a warning. Untracked files will
+      # no longer show as dirty in the prompt; a manual status run is required for that.
+      @git_clean ||= (repo_path == '.' || `git status -uno --porcelain`.strip.empty?)
     end
 
     def cwd_dirty
