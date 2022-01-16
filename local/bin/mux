@@ -26,10 +26,14 @@ if [[ "$1" == "--prompt" ]]; then
   compinit
 
   if [[ -n "$have_tmux_server" ]]; then
-    compcontext=( `tmux ls -F '#{session_name}'` )
+    compcontext=( `tmux ls -F '#{session_group} #{session_group_list}' | tr ' ' '\n'` )
   fi
   vared -cp "tmux session?: " session
-  exec tmux new -t "${session}"
+  if [[ $session == *"-"* ]]; then
+    exec tmux new -s "${session}"
+  else
+    exec tmux new -t "${session}"
+  fi
 fi
 
 # Passthru case: if $1 matches a valid tmux command then call it
