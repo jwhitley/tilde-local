@@ -30,7 +30,7 @@ if [[ "$1" == "--prompt" ]]; then
   fi
   vared -cp "tmux session?: " session
   if [[ $session == *"-"* ]]; then
-    exec tmux new -s "${session}"
+    exec tmux new -As "${session}"
   else
     exec tmux new -t "${session}"
   fi
