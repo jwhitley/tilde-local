@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env -S -P/usr/local/bin:/usr/bin ruby
 # -*- coding: utf-8 -*-
 
 # Emits Git metadata for use in a Zsh prompt.
@@ -95,11 +95,11 @@ module Prompt
     end
 
     def rebasing_etc
-      if File.exists?(File.join(repo_path, 'BISECT_LOG'))
+      if File.exist?(File.join(repo_path, 'BISECT_LOG'))
         "+bisect"
-      elsif File.exists?(File.join(repo_path, 'MERGE_HEAD'))
+      elsif File.exist?(File.join(repo_path, 'MERGE_HEAD'))
         "+merge"
-      elsif %w[rebase rebase-apply rebase-merge ../.dotest].any? {|d| File.exists?(File.join(repo_path, d)) }
+      elsif %w[rebase rebase-apply rebase-merge ../.dotest].any? {|d| File.exist?(File.join(repo_path, d)) }
         "+rebase"
       end
     end
