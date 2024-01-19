@@ -1,4 +1,4 @@
-#!/usr/bin/env -P/opt/homebrew/bin:/usr/local/bin:/usr/bin ruby
+#!/usr/bin/env PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin ruby
 # -*- coding: utf-8 -*-
 
 # Emits Git metadata for use in a Zsh prompt.
